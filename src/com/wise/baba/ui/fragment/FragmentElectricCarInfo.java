@@ -10,11 +10,18 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.google.gson.Gson;
 import com.wise.baba.AppApplication;
 import com.wise.baba.R;
 import com.wise.baba.app.Const;
 import com.wise.baba.app.Msg;
+import com.wise.baba.biz.GetSystem;
 import com.wise.baba.biz.HttpAir;
 import com.wise.baba.biz.HttpCarInfo;
 import com.wise.baba.entity.CarData;
@@ -50,7 +57,7 @@ import android.widget.Toast;
 public class FragmentElectricCarInfo  extends Fragment {
 	
 	static final String TAG = "FragmentElectricCarInfo";
-	private static final String electricUrl = "http://api.bibibaba.cn/device/1592?auth_code=bba2204bcd4c1f87a19ef792f1f68404";
+
 	private HScrollLayout hs_electric_car;//滑动车辆布局
 	private AppApplication app;
 	/** 当前车在列表中位置 **/
@@ -59,10 +66,11 @@ public class FragmentElectricCarInfo  extends Fragment {
 	public HttpAir httpAir;
 	private Handler uiHander = null;//解锁开锁 指令发送 、反馈信息处理
 	private HttpCarInfo httpCarInfo;//刷新汽车的经纬度
-	
-	private String voltage     = null;
-	private String xhlicheng   = null;
-	private String sydianliang = null;
+	CarData carData;
+	private String voltage     = "--";
+	private String xhlicheng   = "--";
+	private String sydianliang = "--";
+	private GeoCoder mGeoCoder = null;
 	
 	// 定位
 	LocationClient mLocClient;
@@ -85,7 +93,9 @@ public class FragmentElectricCarInfo  extends Fragment {
 		uiHander = new Handler(handleCallBack);
 		httpAir = new HttpAir(this.getActivity(),uiHander);
 		httpCarInfo = new HttpCarInfo(this.getActivity(), mHandler);
+		currentIndex = app.currentCarIndex;
 		app = (AppApplication) getActivity().getApplication();
+		carData = new CarData();
 		hs_electric_car = (HScrollLayout) getActivity().findViewById(R.id.hs_electric_car);
 		hs_electric_car.setOnViewChangeListener(new OnViewChangeListener() {
 			
@@ -96,20 +106,26 @@ public class FragmentElectricCarInfo  extends Fragment {
 				}
 				currentIndex = changedIndex;
 				app.currentCarIndex = changedIndex;
-				Log.d("FragmentCarInfo", "当前车辆" + currentIndex);
-				// 等待滚动完毕后查询数据
+
+				carData = app.carDatas.get(currentIndex);
+				String device_id = carData.getDevice_id();	
+				
+				Log.d(TAG, "当前车辆:" + currentIndex + "--" + device_id);
+				httpCarInfo.requestGps(device_id);
 				mHandler.postDelayed(new Runnable() {
 					@Override
 					public void run() {
 						getElectricCarData();//获取数据
+						
 					}
-				}, duration);
+				}, 200);
 				
 			}
 		});
 		
 		initView();
-
+		mGeoCoder = GeoCoder.newInstance();
+		mGeoCoder.setOnGetGeoCodeResultListener(listener);
 		// 定位初始化
 		mLocClient = new LocationClient(getActivity());
 		mLocClient.registerLocationListener(myListener);
@@ -122,6 +138,51 @@ public class FragmentElectricCarInfo  extends Fragment {
 	}
 	
 	
+	OnGetGeoCoderResultListener listener = new OnGetGeoCoderResultListener() {
+		@Override
+		public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
+			if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+			} else {
+				try {
+					String adress = result.getAddress();
+					int startIndex = adress.indexOf("省") + 1;
+					adress = adress.substring(startIndex, adress.length());
+					
+					Log.d(TAG, "定位：：" + adress);
+					
+					app.carDatas.get(currentIndex).setAdress(adress);
+					String rcv_time = app.carDatas.get(currentIndex).getRcv_time();
+					
+					Log.d(TAG, "定位：：" + adress + GetSystem.GetNowDay());
+//					String gpsData = rcv_time.substring(0, 10);// 取出日期
+//					String nowData = GetSystem.GetNowDay();
+//					String showTime = "";
+//					if (gpsData.equals(nowData)) {
+//						showTime = rcv_time.substring(11, 16);
+//					} else if (gpsData.equals(GetSystem
+//							.GetNextData(nowData, -1))) {
+//						showTime = "昨天" + rcv_time.substring(11, 16);
+//					} else if (gpsData.equals(GetSystem
+//							.GetNextData(nowData, -2))) {
+//						showTime = "前天" + rcv_time.substring(11, 16);
+//					} else {
+//						showTime = rcv_time.substring(5, 16);
+//					}
+					
+					electric_carViews.get(currentIndex).getTv_location()
+							.setText(adress + "  " + GetSystem.GetNowDay() );
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		@Override
+		public void onGetGeoCodeResult(GeoCodeResult arg0) {
+
+		}
+	};
 	
 	/**
 	 * @author WU 定位手机经纬度
@@ -226,6 +287,14 @@ public class FragmentElectricCarInfo  extends Fragment {
 			ImageView iv_menu_ctrl = (ImageView)v.findViewById(R.id.iv_menu_ctrl);
 			iv_menu_ctrl.setOnClickListener(onClickListener);
 			
+			
+			LinearLayout ll_adress = (LinearLayout) v
+					.findViewById(R.id.ll_adress);
+			ll_adress.setOnClickListener(onClickListener);
+			
+			TextView textLocation = (TextView) v
+					.findViewById(R.id.textLocation);
+			
 			ImageView iv_lock = (ImageView)v.findViewById(R.id.iv_electric_lock);
 			iv_lock.setOnClickListener(onClickListener);
 			ImageView iv_unlock = (ImageView)v.findViewById(R.id.iv_electric_unlock);
@@ -235,6 +304,10 @@ public class FragmentElectricCarInfo  extends Fragment {
 			electricCarView.setTv_charge_distance(tv_charge_distance);
 			electricCarView.setTv_remainingcapacity(tv_remainingcapacity);
 			electricCarView.setTv_working_voltage(tv_working_voltage);
+			
+			electricCarView.setLl_adress(ll_adress);
+			electricCarView.setTv_location(textLocation);
+			
 			electric_carViews.add(electricCarView);
 			tv_car_name.setText(app.carDatas.get(i).getNick_name());//显示昵称
 		}
@@ -290,15 +363,16 @@ public class FragmentElectricCarInfo  extends Fragment {
 			
 			case Msg.Get_Car_GPS:
 				setGps(bundle);
+				Log.d(TAG, "--->setGps");
 				break;
 			
 			case Msg.Get_Electric_Car_Data:
-
+//				Log.d(TAG, "----" + msg.obj.toString() );
 				jsonElectricCarData(msg.obj.toString());
 				break;
 				
 			case Msg.Get_Electric_Car_TenSecond:
-				Log.d(TAG, "----case Msg.Get_Electric_Car_TenSecond:");
+				Log.d(TAG, "----case Msg.Get_Electric_Car_TenSecond:" );
 				updaUI(currentIndex);//更新UI
 				break;
 			}
@@ -315,22 +389,32 @@ public class FragmentElectricCarInfo  extends Fragment {
 		Double lon = bundle.getDouble("lon");
 		app.carDatas.get(currentIndex).setLat(lat);
 		app.carDatas.get(currentIndex).setLon(lon);
+		LatLng latLng = new LatLng(lat, lon);
+		mGeoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(latLng));
 	}
 	
 	/**
 	 * @param jsonData 
 	 */
 	private void jsonElectricCarData(String jsonData){
-
+		carData = app.carDatas.get(currentIndex);
+		String device_id = carData.getDevice_id();
+		
 		Log.d(TAG, "--->");
+		if(device_id.equals("1592")){
+			Gson gson = new Gson();
+			ElectricCarData electricCarData = gson.fromJson(jsonData, ElectricCarData.class);
+			ElectricCarDetail electricCarDetail = electricCarData.getActive_obd_data();
+			
+			voltage     = electricCarDetail.getDpdy();
+			xhlicheng   = electricCarDetail.getXhlc();
+			sydianliang = electricCarDetail.getSydl();
+		}else{
+			voltage     = "--";
+			xhlicheng   = "--";
+			sydianliang = "--";
+		}
 		
-		Gson gson = new Gson();
-		ElectricCarData electricCarData = gson.fromJson(jsonData, ElectricCarData.class);
-		ElectricCarDetail electricCarDetail = electricCarData.getActive_obd_data();
-		
-		voltage     = electricCarDetail.getDpdy();
-		xhlicheng   = electricCarDetail.getXhlc();
-		sydianliang = electricCarDetail.getSydl();
 		
 		mHandler.sendEmptyMessage(Msg.Get_Electric_Car_TenSecond);
 	}
@@ -351,6 +435,21 @@ public class FragmentElectricCarInfo  extends Fragment {
 	 * 获取数据
 	 */
 	private void getElectricCarData(){
+		
+		carData = app.carDatas.get(currentIndex);
+		String device_id = carData.getDevice_id();
+		
+		
+		
+		
+		String electricUrl = "http://api.bibibaba.cn/device/" +
+				device_id +
+				"?auth_code=" + app.auth_code;
+		
+		
+		Log.d(TAG, "--->" + electricUrl);
+		
+		
 		new NetThread.GetDataThread(mHandler, electricUrl, Msg.Get_Electric_Car_Data).start();
 	}
 	
@@ -371,9 +470,11 @@ public class FragmentElectricCarInfo  extends Fragment {
 		TextView tv_charge_distance   = (TextView)v.findViewById(R.id.tv_charge_distance);//续航里程
 		TextView tv_car_name = (TextView)v.findViewById(R.id.tv_car_name);//汽车名字
 		
-		tv_working_voltage.setText("0");
-		tv_remainingcapacity.setText("0");
-		tv_charge_distance.setText("0");
+		TextView textLocation = (TextView) v.findViewById(R.id.textLocation);
+		textLocation.setText("");
+		tv_working_voltage.setText("--");
+		tv_remainingcapacity.setText("--");
+		tv_charge_distance.setText("--");
 		tv_car_name.setText("绑定叭叭车载智能配件");
 		
 		ll_electric_car.setOnClickListener(new OnClickListener() {
@@ -399,7 +500,7 @@ public class FragmentElectricCarInfo  extends Fragment {
 					try {
 						SystemClock.sleep(10000);
 						getElectricCarData();
-						Log.d(TAG, "十秒刷新数据");
+
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -429,7 +530,6 @@ public class FragmentElectricCarInfo  extends Fragment {
 			public void run() {
 				while (resumed) {
 					SystemClock.sleep(5 * 60000);
-					// SystemClock.sleep(5000);
 					httpCarInfo.requestAllData();
 					Log.i("ThreadTest", "refreshAllData");
 				}
@@ -453,12 +553,13 @@ public class FragmentElectricCarInfo  extends Fragment {
 					if (currentIndex >= app.carDatas.size()) {
 						continue;
 					}
-					CarData carData = app.carDatas.get(currentIndex);
+					carData = app.carDatas.get(currentIndex);
 					String device_id = carData.getDevice_id();
 					if (device_id == null || device_id.equals("")) {
 						continue;
 					}
 					httpCarInfo.requestGps(device_id);
+					Log.d(TAG, "十秒刷新数据requestGps");
 					SystemClock.sleep(30000);
 				}
 			}
@@ -481,14 +582,12 @@ public class FragmentElectricCarInfo  extends Fragment {
 		refreshAllData();
 		updataElectricCarData();
 		Log.d(TAG, "onResume();");
-
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 		resumed = false;
-		
 		Log.d(TAG, "onPause();");
 	}
 	

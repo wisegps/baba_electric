@@ -101,6 +101,7 @@ public class FragmentCarInfo extends Fragment {
 				TypedValue.COMPLEX_UNIT_DIP, 280, getResources()
 						.getDisplayMetrics());
 		completed = (width - twoCompleted) / 3;
+		
 		mGeoCoder = GeoCoder.newInstance();
 		mGeoCoder.setOnGetGeoCodeResultListener(listener);
 		
@@ -487,10 +488,15 @@ public class FragmentCarInfo extends Fragment {
 					LinearLayout.LayoutParams.WRAP_CONTENT);
 			lp.setMargins(0, 0, completed, 0);
 			rl_left_complete.setLayoutParams(lp);
+			
 
 			LinearLayout ll_adress = (LinearLayout) v
 					.findViewById(R.id.ll_adress);
 			ll_adress.setOnClickListener(onClickListener);
+			
+			
+			
+			
 			TextView tv_score = (TextView) v.findViewById(R.id.tv_score);
 			TextView tv_title = (TextView) v.findViewById(R.id.tv_title);
 			// 当前里程数

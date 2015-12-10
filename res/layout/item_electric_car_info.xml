@@ -21,14 +21,14 @@
             android:layout_height="wrap_content"
             android:text="麦格雷迪" />
 
-        <!-- <LinearLayout
+        <LinearLayout
             android:id="@+id/ll_adress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_alignBottom="@id/tv_car_name"
             android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/tv_name" >
+            android:layout_toRightOf="@id/tv_car_name" >
 
             <ImageView
                 android:id="@+id/imgLocation"
@@ -52,7 +52,7 @@
                  android:alpha="0.3"
                  android:selectAllOnFocus="true"
                />
-        </LinearLayout> -->
+        </LinearLayout> 
 
         <ImageView
             android:id="@+id/iv_menu_ctrl"
@@ -177,7 +177,7 @@
                     android:id="@+id/tv_working_voltage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0"
+                    android:text="--"
                     android:textColor="@color/color_navy"
                     android:textSize="@dimen/big_number" />
 
@@ -239,7 +239,7 @@
                     android:id="@+id/tv_remainingcapacity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0"
+                    android:text="--"
                     android:textColor="@color/color_navy"
                     android:textSize="@dimen/big_number" />
 
@@ -317,7 +317,7 @@
                     android:id="@+id/tv_charge_distance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0"
+                    android:text="--"
                     android:textColor="@color/color_navy"
                     android:textSize="@dimen/big_number" />
                 

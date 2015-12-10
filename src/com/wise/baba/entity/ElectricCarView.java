@@ -1,5 +1,6 @@
 package com.wise.baba.entity;
 
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class ElectricCarView {
@@ -10,8 +11,24 @@ public class ElectricCarView {
 	
 	TextView tv_car_name;//汽车名字
 	
-	
-	
+	LinearLayout ll_adress;
+	TextView tv_location;
+
+	public TextView getTv_location() {
+		return tv_location;
+	}
+
+	public void setTv_location(TextView tv_location) {
+		this.tv_location = tv_location;
+	}
+
+	public LinearLayout getLl_adress() {
+		return ll_adress;
+	}
+
+	public void setLl_adress(LinearLayout ll_adress) {
+		this.ll_adress = ll_adress;
+	}
 
 	public TextView getTv_working_voltage() {
 		return tv_working_voltage;
