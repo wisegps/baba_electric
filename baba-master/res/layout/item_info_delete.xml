@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@drawable/bg_white"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        android:id="@+id/llytLeft"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:padding="5dip" >
+
+        <ImageView
+            android:id="@+id/iv_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="-10dp"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ico_card_delete"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/info_icon"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/amp2" />
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="4"
+            android:orientation="vertical"
+            android:padding="3dip" >
+
+            <TextView
+                android:id="@+id/tv_info_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="乐一下"
+                android:textColor="@color/back"
+                android:textSize="@dimen/content" />
+
+            <TextView
+                android:id="@+id/tv_info_content"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="乐一下的内容部分"
+                android:textColor="@color/content_gray"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_manage"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ico_card_manage"
+            android:visibility="visible" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/item_add"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center_vertical|right"
+        android:background="#ff3a30"
+        android:gravity="center"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="删除"
+        android:textColor="@color/white"
+        android:textSize="@dimen/content"
+        android:visibility="gone" />
+
+</LinearLayout>

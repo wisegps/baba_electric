@@ -1,0 +1,230 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res/com.wise.baba"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/gray_bg" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:id="@+id/ll_main"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/title_hight"
+            android:background="@color/title_back" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="设置中心"
+                android:textColor="@color/white"
+                android:textSize="@dimen/title" />
+
+            <ImageView
+                android:id="@+id/iv_back"
+              style="@style/title_back_style"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_login"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margins"
+            android:background="@drawable/bg_white"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/margins"
+            android:paddingLeft="@dimen/double_margins"
+            android:paddingTop="@dimen/margins" >
+
+            <com.wise.baba.ui.widget.CircleImageView
+                android:id="@+id/iv_logo"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/margins"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/icon_people_no"
+                app:border_color="@color/white"
+                app:border_width="1dp" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/iv_logo"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:id="@+id/tv_login"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/margins"
+                        android:text="登录/注册"
+                        android:textColor="@color/navy"
+                        android:textSize="@dimen/main" />
+
+                    <ImageView
+                        android:id="@+id/iv_sex"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginRight="@dimen/margins"
+                        android:src="@drawable/icon_man"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/iv_service"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/icon_xx_service"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_balance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margins"
+                    android:text="账户余额：0元"
+                    android:textColor="@color/navy"
+                    android:textSize="@dimen/content"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/iv_eweima"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/margins"
+                android:background="@drawable/bg_common"
+                android:padding="@dimen/margins"
+                android:src="@drawable/ewm"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margins"
+            android:background="@drawable/bg_white" >
+
+            <TextView
+                android:id="@+id/tv_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:drawablePadding="@dimen/margins"
+                android:drawableRight="@drawable/btn_right"
+                android:padding="@dimen/double_margins"
+                android:text="深圳"
+                android:textColor="@color/Green"
+                android:textSize="@dimen/content" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/double_margins"
+                android:text="定位城市"
+                android:textColor="@color/navy"
+                android:textSize="@dimen/content" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/gay_line" />
+
+        <TextView
+            android:id="@+id/tv_car"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_white"
+            android:padding="@dimen/double_margins"
+            android:text="我的爱车"
+            android:textColor="@color/navy"
+            android:textSize="@dimen/content" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/gay_line" />
+
+        <TextView
+            android:id="@+id/tv_info"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_white"
+            android:padding="@dimen/double_margins"
+            android:text="管理卡片"
+            android:textColor="@color/navy"
+            android:textSize="@dimen/content" />
+
+        <TextView
+            android:id="@+id/tv_offline_map"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margins"
+            android:background="@drawable/bg_white"
+            android:padding="@dimen/double_margins"
+            android:text="离线地图"
+            android:textColor="@color/navy"
+            android:textSize="@dimen/content" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/gay_line" />
+
+        <TextView
+            android:id="@+id/tv_feedback"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_white"
+            android:padding="@dimen/double_margins"
+            android:text="反馈建议"
+            android:textColor="@color/navy"
+            android:textSize="@dimen/content" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/gay_line" />
+
+        <TextView
+            android:id="@+id/tv_about"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_white"
+            android:padding="@dimen/double_margins"
+            android:text="关于叭叭"
+            android:textColor="@color/navy"
+            android:textSize="@dimen/content" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/bt_login_out"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bg_pink"
+        android:padding="@dimen/margins"
+        android:text="退出登录"
+        android:textColor="@color/white"
+        android:textSize="@dimen/bt"
+        android:visibility="gone" />
+
+</RelativeLayout>

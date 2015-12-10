@@ -1,0 +1,68 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white" >
+
+    <RelativeLayout
+        android:id="@+id/ll_main"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/title_hight"
+        android:layout_alignParentTop="true"
+        android:background="@color/title_back" >
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/title" />
+
+        <ImageView
+            android:id="@+id/iv_back"
+            style="@style/title_back_style"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_content"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" >
+
+        <LinearLayout
+            android:id="@+id/ll_fault"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <ListView
+                android:id="@+id/listDetection"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                 android:divider="#00000000"  
+          android:dividerHeight="0dip"  
+          android:listSelector="@android:color/transparent"   
+                 >
+            </ListView>
+			
+            <View android:layout_width="fill_parent" 
+                android:layout_height="1px"
+                android:background="#bbbbbb"
+                />
+            <include layout="@layout/include_fault_detection"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <com.wise.baba.ui.widget.FaultDeletionView
+        android:id="@+id/hs_car"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/rl_content"
+        android:layout_below="@id/ll_main" />
+
+
+
+</RelativeLayout>

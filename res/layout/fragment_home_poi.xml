@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/llytHomePoi"
+    style="@style/home_card_style"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/rlytTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp" >
+
+        <TextView
+            android:id="@+id/textNearby"
+            style="@style/home_card_title_style"
+            android:text="周边" />
+
+        <ImageView
+            android:id="@+id/imgCar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/textNearby"
+            android:src="@drawable/ico_car" />
+
+        <ImageView
+            android:id="@+id/iv_poi_menu"
+            style="@style/home_card_img_down_style" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/lineTitle"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#bbbbbb"
+        android:focusable="true"
+        android:focusableInTouchMode="true" >
+    </View>
+
+    <AutoCompleteTextView
+        android:id="@+id/autoTextSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_border_rect"
+        android:drawableLeft="@drawable/ico_search"
+        android:ems="10"
+        android:focusable="false"
+        android:hint=" 搜索" >
+    </AutoCompleteTextView>
+
+    <com.wise.baba.ui.widget.WrapContentViewPager
+        android:id="@+id/viewPagerPOI"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:fadeScrollbars="false"
+        android:fadingEdge="none" />
+
+    <LinearLayout
+        android:id="@+id/llyt_circle_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="15dp" >
+
+        <ImageView
+            android:id="@+id/iv_circle_page_0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:src="@drawable/img_circle_dot_blue" />
+
+        <ImageView
+            android:id="@+id/iv_circle_page_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:src="@drawable/img_circle_dot_blue_light" />
+    </LinearLayout>
+</LinearLayout>

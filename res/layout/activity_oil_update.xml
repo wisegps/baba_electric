@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/ll_main"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/title_hight"
+        android:background="@color/title_back" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="油耗修正"
+            android:textColor="@color/white"
+            android:textSize="@dimen/title" />
+
+        <ImageView
+            android:id="@+id/iv_back"
+          style="@style/title_back_style"/>
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/small"
+                android:text="对于大多数车型而言，系统会根据新车数据对油耗进行自动修正，但是如果您发现您的油耗还是不太准确，可以通过以下两种方式进行油耗修正。"
+                android:textSize="@dimen/content" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray_light"
+                android:padding="@dimen/margins"
+                android:text="1.车上有行车电脑，可以通过行程进行油耗修正"
+                android:textSize="@dimen/content" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/small" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="在结束第一次行程以后，可以进入行程界面，录入行车电脑上显示的行程油耗即可，这样经过几次录入以后，系统会自动对油耗进行修正。"
+                    android:textSize="@dimen/content" />
+
+                <Button
+                    android:id="@+id/bt_oil_update"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margins"
+                    android:background="@drawable/bg_green"
+                    android:textColor="@color/white"
+                    android:text="开始修正" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray_light"
+                android:padding="@dimen/margins"
+                android:text="2.车上没有行车电脑，通过两次加油对油耗进行修正"
+                android:textSize="@dimen/content" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical"
+                android:padding="@dimen/small" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="第一次加满油以后，请点击以下按钮:"
+                    android:textSize="@dimen/content" />
+
+                <Button
+                    android:id="@+id/bt_oil_add_1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margins"
+                    android:background="@drawable/bg_green"
+                    android:textColor="@color/white"
+                    android:text="第一次加满油" />
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margins"
+                    android:text="第二次加满油以后，请录入加油量，并点击以下按钮:"
+                    android:textSize="@dimen/content" />
+
+                <EditText
+                    android:id="@+id/et_oil_record"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margins"
+                    android:hint="请输入加油量:单位L"
+                    android:inputType="number" />
+
+                <Button
+                    android:id="@+id/bt_oil_add_2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margins"
+                    android:background="@drawable/bg_green"
+                    android:textColor="@color/white"
+                    android:text="第二次加满油" />
+                <Button
+                    android:id="@+id/bt_reset"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margins"
+                    android:background="@drawable/bg_green"
+                    android:textColor="@color/white"
+                    android:text="重置加油修正" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

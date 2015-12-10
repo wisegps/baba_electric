@@ -1,0 +1,13 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_CardInfo"
+    style="@style/home_card_style"
+    android:orientation="vertical" >
+   
+
+    <com.wise.baba.ui.widget.HScrollLayout
+        android:id="@+id/hs_electric_car"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
+
+</LinearLayout>

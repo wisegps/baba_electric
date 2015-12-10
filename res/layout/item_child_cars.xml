@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_white"
+     >
+     <com.wise.baba.ui.widget.CustomGridView
+        android:id="@+id/gv_compet"
+        android:background="#bcbcbc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:horizontalSpacing="1px"
+        android:verticalSpacing="1px"
+        android:gravity="center"
+        android:stretchMode="columnWidth"
+        android:numColumns="4"
+      >
+    </com.wise.baba.ui.widget.CustomGridView>
+</LinearLayout>
