@@ -135,8 +135,7 @@ public class SearchMapActivity extends Activity {
 		} else if(keyWord.equals("充电柱")){
 			try {
 				String url_charge = "http://api.bibibaba.cn/location?" +
-						"auth_code=" + 
-						"127a154df2d7850c4232542b4faa2c3d" +
+						"auth_code=" + app.auth_code +
 						"&city="  + URLEncoder.encode(app.phoneCity, "UTF-8") +
 						"&type=4" +
 						"&lat=" + app.phone_latlng.latitude +
