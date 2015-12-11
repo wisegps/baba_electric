@@ -16,6 +16,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -31,6 +32,7 @@ import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
@@ -51,6 +53,7 @@ import com.baidu.mapapi.search.poi.PoiResult;
 import com.baidu.mapapi.search.poi.PoiSearch;
 import com.baidu.mapapi.search.poi.PoiSortType;
 import com.baidu.mapapi.utils.DistanceUtil;
+import com.baidu.nplatform.comapi.map.MapController;
 import com.wise.baba.AppApplication;
 import com.wise.baba.R;
 import com.wise.baba.app.Constant;
@@ -67,6 +70,8 @@ public class SearchMapActivity extends Activity {
 	private PoiSearch mPoiSearch = null;
 	private BaiduMap mBaiduMap = null;
 	private MapView mMapView = null;
+	
+	
 	CarData carData;
 
 	private final int getIsCollect = 1;
@@ -93,6 +98,8 @@ public class SearchMapActivity extends Activity {
 		String keyWord = getIntent().getStringExtra("keyWord");
 		String key = getIntent().getStringExtra("key");
 		mMapView = (MapView) findViewById(R.id.mv_search_map);
+
+		
 		mBaiduMap = mMapView.getMap();
 		mBaiduMap.setMapStatus(MapStatusUpdateFactory.zoomTo(12));
 		mPoiSearch = PoiSearch.newInstance();
@@ -130,8 +137,13 @@ public class SearchMapActivity extends Activity {
 				String url_charge = "http://api.bibibaba.cn/location?" +
 						"auth_code=" + 
 						"127a154df2d7850c4232542b4faa2c3d" +
-						"&city=%E5%8C%97%E4%BA%AC&type=4" +
-						"&lat=40.322868&lon=116.652255&page_count=100";
+						"&city="  + URLEncoder.encode(app.phoneCity, "UTF-8") +
+						"&type=4" +
+						"&lat=" + app.phone_latlng.latitude +
+						"&lon=" + app.phone_latlng.longitude +
+						"&page_count=100";
+				
+				Log.d("FragmentElectricCarInfo", "充电柱：：" + url_charge);
 				new Thread(new NetThread.GetDataThread(handler, url_charge, get_charge)).start();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -220,7 +232,8 @@ public class SearchMapActivity extends Activity {
 				break;
 				
 			case get_charge://充电柱
-				jsonDealAdress(msg.obj.toString());
+
+			    jsonChargeDealAdress(msg.obj.toString());
 				adressAdapter.notifyDataSetChanged();
 				break;
 				
@@ -228,6 +241,83 @@ public class SearchMapActivity extends Activity {
 		}
 	};
 
+	
+	
+	
+	/**
+	 * @param result 充电桩解析
+	 * 
+	 */
+	private void jsonChargeDealAdress(String result) {
+		
+		if("[]".equals(result)){
+			Toast.makeText(SearchMapActivity.this, "抱歉，没找到结果",
+					Toast.LENGTH_SHORT).show();
+			adressDatas.clear();
+		}else{
+			adressDatas.clear();
+			try {
+				LatLngBounds.Builder builder = new Builder();
+				JSONArray jsonArray = new JSONArray(result);
+				for (int i = 0; i < jsonArray.length(); i++) {// TODO
+					if (i == 10) {
+						// 只显示10个
+						break;
+					}
+					JSONObject jsonObject = jsonArray.getJSONObject(i);
+					AdressData adressData = new AdressData();
+					adressData.setAdress(jsonObject.getString("address"));
+					adressData.setName(jsonObject.getString("name"));
+					adressData.setPhone(jsonObject.getString("tel"));
+					adressData.setLat(jsonObject.getDouble("lat"));
+					adressData.setLon(jsonObject.getDouble("lon"));
+					adressData.setDistance(jsonObject.getInt("distance"));
+					if (jsonObject.getString("is_collect").equals("1")) {
+						// 收藏
+						adressData.setIs_collect(true);
+					} else {
+						// 未收藏
+						adressData.setIs_collect(false);
+					}
+					adressDatas.add(adressData);
+					LatLng latLng = new LatLng(adressDatas.get(i).getLat(),
+							adressDatas.get(i).getLon());
+					OverlayOptions marker;
+					// 图片名称
+					String imagePath = "Icon_mark" + (i + 1) + ".png";
+					try {
+						// 百度jar包里的图片
+						Bitmap bitmap = BitmapFactory
+								.decodeStream(SearchMapActivity.this.getAssets()
+										.open(imagePath));
+						marker = new MarkerOptions().position(latLng).icon(
+								BitmapDescriptorFactory.fromBitmap(bitmap));
+					} catch (IOException e) {
+						e.printStackTrace();
+						marker = new MarkerOptions().position(latLng).icon(
+								BitmapDescriptorFactory
+										.fromResource(R.drawable.body_icon_outset));
+					}
+					mBaiduMap.addOverlay(marker);
+					builder.include(latLng);
+				}
+				LatLngBounds bounds = builder.build();
+				MapStatusUpdate u1 = MapStatusUpdateFactory.newLatLngBounds(bounds);
+				mBaiduMap.animateMapStatus(u1);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+	
+	
+	
+	
+	
+	
+	
 	private void jsonDealAdress(String result) {
 		try {
 			LatLngBounds.Builder builder = new Builder();
@@ -408,6 +498,8 @@ public class SearchMapActivity extends Activity {
 		}
 	}
 
+
+
 	Marker phoneMark;
 	private class MyLocationListenner implements BDLocationListener {
 		@Override
@@ -428,6 +520,14 @@ public class SearchMapActivity extends Activity {
 					.position(latLng).icon(bitmap);
 			// 在地图上添加Marker，并显示
 			phoneMark = (Marker) (mBaiduMap.addOverlay(option));
+			//显示手机位置的界面
+			MapStatus mapStatus = new MapStatus.Builder().target(latLng)
+					.build();
+			MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory
+					.newMapStatus(mapStatus);
+			mBaiduMap.setMapStatus(mapStatusUpdate);
+			
+			
 		}
 	}
 

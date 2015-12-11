@@ -9,6 +9,7 @@ import org.litepal.LitePalApplication;
 import android.content.Context;
 
 import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.model.LatLng;
 import com.wise.baba.app.App;
 import com.wise.baba.biz.GetSystem;
 import com.wise.baba.db.dao.DaoMaster;
@@ -25,6 +26,11 @@ import com.wise.baba.entity.CarData;
  */
 public class AppApplication extends LitePalApplication {
 	private static final String TAG = "AppApplication";
+	
+	
+	public LatLng phone_latlng;
+	public String phoneCity = "";
+	
 	/** 演示true **/
 	public boolean isTest = false;
 	/** auth_code **/

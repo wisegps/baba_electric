@@ -17,7 +17,6 @@ import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
-import com.google.gson.Gson;
 import com.wise.baba.AppApplication;
 import com.wise.baba.R;
 import com.wise.baba.app.Const;
@@ -25,8 +24,6 @@ import com.wise.baba.app.Msg;
 import com.wise.baba.biz.GetSystem;
 import com.wise.baba.biz.HttpCarInfo;
 import com.wise.baba.entity.CarData;
-import com.wise.baba.entity.ElectricCarData;
-import com.wise.baba.entity.ElectricCarDetail;
 import com.wise.baba.entity.ElectricCarView;
 import com.wise.baba.net.NetThread;
 import com.wise.baba.ui.adapter.OnCardMenuListener;
@@ -66,6 +63,7 @@ public class FragmentElectricCarSecond extends Fragment{
 	private String xhlicheng   = "--";
 	private String sydianliang = "--";
 	private GeoCoder mGeoCoder = null;
+	private GeoCoder mGeoCoder_Phone = null;
 	
 	// 定位
 	LocationClient mLocClient;
@@ -112,6 +110,9 @@ public class FragmentElectricCarSecond extends Fragment{
 		initView();
 		mGeoCoder = GeoCoder.newInstance();
 		mGeoCoder.setOnGetGeoCodeResultListener(listener);
+		
+		mGeoCoder_Phone = GeoCoder.newInstance();
+		mGeoCoder_Phone.setOnGetGeoCodeResultListener(phoneListener);
 		// 定位初始化
 		mLocClient = new LocationClient(getActivity());
 		mLocClient.registerLocationListener(myListener);
@@ -123,9 +124,38 @@ public class FragmentElectricCarSecond extends Fragment{
 		mLocClient.start();	
 	}
 	
+	/**
+	 * 手机设备地理位置反解析
+	 */
+	OnGetGeoCoderResultListener phoneListener = new OnGetGeoCoderResultListener() {
+		@Override
+		public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
+			if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+			} else {
+				try {
+					String phone_adress = result.getAddress();
+					int startIndex = phone_adress.indexOf("省") + 1;
+					int endIndex = phone_adress.indexOf("市");
+					
+					app.phoneCity = phone_adress.substring(startIndex, endIndex);
+					Log.d(TAG, "手机的位置：：" + app.phoneCity);
+							
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		@Override
+		public void onGetGeoCodeResult(GeoCodeResult arg0) {
+			app.phoneCity = app.City;
+			Log.d(TAG, "手机的位置：ERR：" + app.phoneCity);
+		}
+	};
+	
 	
 	/**
-	 * 地理位置反解析
+	 * 汽车地理位置反解析
 	 */
 	OnGetGeoCoderResultListener listener = new OnGetGeoCoderResultListener() {
 		@Override
@@ -133,13 +163,16 @@ public class FragmentElectricCarSecond extends Fragment{
 			if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
 			} else {
 				try {
+					
+
 					String adress = result.getAddress();
 					int startIndex = adress.indexOf("省") + 1;
 					adress = adress.substring(startIndex, adress.length());
-					Log.d(TAG, "定位：：" + adress);
+					Log.d(TAG, "车的位置：：" + adress);
 					app.carDatas.get(currentIndex).setAdress(adress);
 					electric_carViews.get(currentIndex).getTv_location()
 							.setText(adress + "  " + GetSystem.GetNowDay() );
+					
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -164,6 +197,9 @@ public class FragmentElectricCarSecond extends Fragment{
 			if (location == null )
 				return;
 			LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());	
+			app.phone_latlng = latLng;
+			Log.e(TAG, "手机经纬度" + latLng);
+			mGeoCoder_Phone.reverseGeoCode(new ReverseGeoCodeOption().location(latLng));
 		}
 	}
 	
@@ -232,11 +268,8 @@ public class FragmentElectricCarSecond extends Fragment{
 			if (Device_id == null || Device_id.equals("")) {
 
 				xuhang_licheng.initValue(0, mHandler);
-				tv_title_xhlc.setVisibility(View.VISIBLE);
 				tv_title_xhlc.setText("未绑定终端");
 				tv_xuhang_l_c.setText("0");
-			}else{
-				tv_title_xhlc.setVisibility(View.GONE);
 			}
 			
 			
@@ -325,6 +358,7 @@ public class FragmentElectricCarSecond extends Fragment{
 		app.carDatas.get(currentIndex).setLat(lat);
 		app.carDatas.get(currentIndex).setLon(lon);
 		LatLng latLng = new LatLng(lat, lon);
+		
 		mGeoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(latLng));
 	}
 	

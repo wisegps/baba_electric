@@ -3,6 +3,7 @@ package com.wise.baba.ui.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.baidu.location.BDLocation;
@@ -72,7 +73,7 @@ public class FragmentElectricCarInfo  extends Fragment {
 	private String xhlicheng   = "--";
 	private String sydianliang = "--";
 	private GeoCoder mGeoCoder = null;
-	
+	private GeoCoder mGeoCoder_Phone = null;
 	// 定位
 	LocationClient mLocClient;
 	public MyLocationListenner myListener = new MyLocationListenner();
@@ -94,7 +95,6 @@ public class FragmentElectricCarInfo  extends Fragment {
 		uiHander = new Handler(handleCallBack);
 		httpAir = new HttpAir(this.getActivity(),uiHander);
 		httpCarInfo = new HttpCarInfo(this.getActivity(), mHandler);
-		currentIndex = app.currentCarIndex;
 		app = (AppApplication) getActivity().getApplication();
 		carData = new CarData();
 		hs_electric_car = (HScrollLayout) getActivity().findViewById(R.id.hs_electric_car);
@@ -127,6 +127,9 @@ public class FragmentElectricCarInfo  extends Fragment {
 		initView();
 		mGeoCoder = GeoCoder.newInstance();
 		mGeoCoder.setOnGetGeoCodeResultListener(listener);
+		mGeoCoder_Phone = GeoCoder.newInstance();
+		mGeoCoder_Phone.setOnGetGeoCodeResultListener(phoneListener);
+		
 		// 定位初始化
 		mLocClient = new LocationClient(getActivity());
 		mLocClient.registerLocationListener(myListener);
@@ -137,6 +140,36 @@ public class FragmentElectricCarInfo  extends Fragment {
 		mLocClient.setLocOption(option);
 		mLocClient.start();	
 	}
+	
+	
+	/**
+	 * 手机设备地理位置反解析
+	 */
+	OnGetGeoCoderResultListener phoneListener = new OnGetGeoCoderResultListener() {
+		@Override
+		public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
+			if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+			} else {
+				try {
+					String phone_adress = result.getAddress();
+					int startIndex = phone_adress.indexOf("省") + 1;
+					int endIndex = phone_adress.indexOf("市");
+					
+					app.phoneCity = phone_adress.substring(startIndex, endIndex);
+					Log.d(TAG, "手机的位置：：" + app.phoneCity);
+							
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		@Override
+		public void onGetGeoCodeResult(GeoCodeResult arg0) {
+			app.phoneCity = app.City;
+			Log.d(TAG, "手机的位置：ERR：" + app.phoneCity);
+		}
+	};
 	
 	
 	OnGetGeoCoderResultListener listener = new OnGetGeoCoderResultListener() {
@@ -196,6 +229,8 @@ public class FragmentElectricCarInfo  extends Fragment {
 			if (location == null )
 				return;
 			LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());	
+			app.phone_latlng = latLng;
+			mGeoCoder_Phone.reverseGeoCode(new ReverseGeoCodeOption().location(latLng));
 		}
 	}
 	
@@ -406,23 +441,67 @@ public class FragmentElectricCarInfo  extends Fragment {
 	 * @param jsonData 
 	 */
 	private void jsonElectricCarData(String jsonData){
-		carData = app.carDatas.get(currentIndex);
-		String device_id = carData.getDevice_id();
 		
-		Log.d(TAG, "--->");
-		if(device_id.equals("1592")){
-			Gson gson = new Gson();
-			ElectricCarData electricCarData = gson.fromJson(jsonData, ElectricCarData.class);
-			ElectricCarDetail electricCarDetail = electricCarData.getActive_obd_data();
+		try {
+			JSONObject obj = new JSONObject(jsonData);
 			
-			voltage     = electricCarDetail.getDpdy();
-			xhlicheng   = electricCarDetail.getXhlc();
-			sydianliang = electricCarDetail.getSydl();
-		}else{
-			voltage     = "--";
-			xhlicheng   = "--";
-			sydianliang = "--";
+			if(obj.has("active_obd_data")){
+				if(obj.getJSONObject("active_obd_data").has("xhlc")){
+					xhlicheng = obj.getJSONObject("active_obd_data").getString("xhlc");
+					Log.d(TAG, "===========" + xhlicheng);
+				}else {
+					xhlicheng   = "--";
+					Log.d(TAG, "===========" + "没有 xhlc");
+				}if(obj.getJSONObject("active_obd_data").has("sydl")){
+					sydianliang = obj.getJSONObject("active_obd_data").getString("sydl");
+					Log.d(TAG, "===========" + sydianliang);
+				}else {
+					sydianliang = "--";
+					Log.d(TAG, "===========" + "没有 sydl");
+				}if(obj.getJSONObject("active_obd_data").has("dpdy")){
+					voltage = obj.getJSONObject("active_obd_data").getString("dpdy");
+					
+					if(Float.valueOf(voltage) < 25.00){
+						voltage     = "--";
+						Log.d(TAG, "===========" + "没有 dpdy");
+					}else{
+						Log.d(TAG, "===========" + voltage);
+					}
+				}else {
+					voltage     = "--";
+					Log.d(TAG, "===========" + "没有 dpdy");
+				}
+				
+			}else{
+				Log.d(TAG, "===========" + "wuwuwuwuwu");
+				
+				voltage     = "--";
+				xhlicheng   = "--";
+				sydianliang = "--";
+			}
+			
+			
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+//		carData = app.carDatas.get(currentIndex);
+//		String device_id = carData.getDevice_id();
+//		
+//		Log.d(TAG, "--->");
+//		if(device_id.equals("1592")){
+//			Gson gson = new Gson();
+//			ElectricCarData electricCarData = gson.fromJson(jsonData, ElectricCarData.class);
+//			ElectricCarDetail electricCarDetail = electricCarData.getActive_obd_data();
+//			
+//			voltage     = electricCarDetail.getDpdy();
+//			xhlicheng   = electricCarDetail.getXhlc();
+//			sydianliang = electricCarDetail.getSydl();
+//		}else{
+//			voltage     = "--";
+//			xhlicheng   = "--";
+//			sydianliang = "--";
+//		}
 		
 		
 		mHandler.sendEmptyMessage(Msg.Get_Electric_Car_TenSecond);

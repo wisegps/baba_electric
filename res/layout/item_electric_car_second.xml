@@ -143,8 +143,8 @@
                     android:id="@+id/tv_title_xhlc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/navy_gray"
-                    android:visibility="gone" />
+                    android:text="续航里程"
+                    android:textColor="@color/navy_gray" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -159,15 +159,16 @@
                         android:fontFamily="sans-serif-light"
                         android:text="0"
                         android:textColor="@color/navy_blue"
-                        android:textSize="@dimen/score_number" />
+                        android:textSize="30sp" />
 
-                    <!-- <TextView
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
-                        android:text="分"
+                        android:text="KM"
+                        android:textSize="12sp"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/navy_blue" /> -->
+                        android:textColor="@color/navy_blue" />
                 </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
@@ -191,8 +192,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="电柱"
-                    android:textColor="@color/navy_gray" />
+                    android:text="充电柱"
+                    android:textSize="25sp"
+                    android:textColor="@color/navy_blue" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -206,7 +208,7 @@
                         android:alpha="0.8"
                         android:fontFamily="sans-serif-light"
                         android:text="分布图"
-                        android:textColor="@color/navy_blue"/>
+                        android:textColor="@color/navy_gray"/>
 
                     <!-- <TextView
                         android:layout_width="wrap_content"
