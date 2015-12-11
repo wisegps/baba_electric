@@ -1,18 +1,14 @@
 package com.wise.baba.ui.fragment;
 
 import java.io.Serializable;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,20 +36,15 @@ import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
-import com.google.gson.Gson;
 import com.wise.baba.AppApplication;
 import com.wise.baba.R;
 import com.wise.baba.app.Const;
 import com.wise.baba.app.Constant;
 import com.wise.baba.app.Msg;
 import com.wise.baba.biz.GetSystem;
-import com.wise.baba.biz.GetUrl;
 import com.wise.baba.biz.HttpCarInfo;
-import com.wise.baba.entity.ActiveGpsData;
 import com.wise.baba.entity.CarData;
 import com.wise.baba.entity.CarView;
-import com.wise.baba.entity.GpsData;
-import com.wise.baba.net.NetThread;
 import com.wise.baba.ui.adapter.OnCardMenuListener;
 import com.wise.baba.ui.widget.DialView;
 import com.wise.baba.ui.widget.HScrollLayout;
@@ -72,11 +63,11 @@ import com.wise.state.FuelActivity;
  * @author honesty
  **/
 public class FragmentCarInfo extends Fragment {
-	private static final String TAG = "FragmentCarInfo";
+	
+	static final String TAG = "FragmentCarInfo";
 	HScrollLayout hs_car;
 	AppApplication app;
-	/** 当前车在列表中位置 **/
-	public int index = 0;
+	public int index = 0;/** 当前车在列表中位置 **/
 	/** 仪表盘的间距 **/
 	int completed;
 	private GeoCoder mGeoCoder = null;
@@ -477,7 +468,6 @@ public class FragmentCarInfo extends Fragment {
 			ImageView ivDriveMenu = (ImageView) getActivity().findViewById(
 					R.id.iv_drive_menu);
 			ivDriveMenu.setOnClickListener(onClickListener);
-
 			ImageView iv_update_oil = (ImageView) v
 					.findViewById(R.id.iv_update_oil);
 			iv_update_oil.setOnClickListener(onClickListener);
@@ -488,15 +478,11 @@ public class FragmentCarInfo extends Fragment {
 					LinearLayout.LayoutParams.WRAP_CONTENT);
 			lp.setMargins(0, 0, completed, 0);
 			rl_left_complete.setLayoutParams(lp);
-			
-
+		
 			LinearLayout ll_adress = (LinearLayout) v
 					.findViewById(R.id.ll_adress);
 			ll_adress.setOnClickListener(onClickListener);
-			
-			
-			
-			
+
 			TextView tv_score = (TextView) v.findViewById(R.id.tv_score);
 			TextView tv_title = (TextView) v.findViewById(R.id.tv_title);
 			// 当前里程数
@@ -516,6 +502,7 @@ public class FragmentCarInfo extends Fragment {
 			v.findViewById(R.id.Liner_fee).setOnClickListener(onClickListener);
 
 			TextView tv_drive = (TextView) v.findViewById(R.id.tv_drive);
+
 			DialView dialHealthScore = (DialView) v
 					.findViewById(R.id.dialHealthScore);
 
@@ -524,6 +511,7 @@ public class FragmentCarInfo extends Fragment {
 
 			dialHealthScore.setOnClickListener(onClickListener);
 			dialDriveScore.setOnClickListener(onClickListener);
+
 			CarView carView = new CarView();
 			carView.setLl_adress(ll_adress);
 			carView.setTv_distance(tv_distance);
@@ -539,7 +527,9 @@ public class FragmentCarInfo extends Fragment {
 			carViews.add(carView);
 
 			tv_name.setText(app.carDatas.get(i).getNick_name());
+			
 			String Device_id = app.carDatas.get(i).getDevice_id();
+			
 			if (Device_id == null || Device_id.equals("")) {
 
 				dialHealthScore.initValue(0, handler);

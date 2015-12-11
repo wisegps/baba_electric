@@ -1,5 +1,7 @@
 package com.wise.baba.entity;
 
+import com.wise.baba.ui.widget.DialView;
+
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,6 +15,36 @@ public class ElectricCarView {
 	
 	LinearLayout ll_adress;
 	TextView tv_location;
+	
+	DialView xuhang_licheng;
+	TextView tv_xuhang_l_c;
+	TextView tv_title_xhlc;
+	
+	
+
+	public TextView getTv_title_xhlc() {
+		return tv_title_xhlc;
+	}
+
+	public void setTv_title_xhlc(TextView tv_title_xhlc) {
+		this.tv_title_xhlc = tv_title_xhlc;
+	}
+
+	public TextView getTv_xuhang_l_c() {
+		return tv_xuhang_l_c;
+	}
+
+	public void setTv_xuhang_l_c(TextView tv_xuhang_l_c) {
+		this.tv_xuhang_l_c = tv_xuhang_l_c;
+	}
+
+	public DialView getXuhang_licheng() {
+		return xuhang_licheng;
+	}
+
+	public void setXuhang_licheng(DialView xuhang_licheng) {
+		this.xuhang_licheng = xuhang_licheng;
+	}
 
 	public TextView getTv_location() {
 		return tv_location;

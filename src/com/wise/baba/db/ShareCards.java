@@ -1,6 +1,5 @@
 package com.wise.baba.db;
 import com.wise.baba.app.Const;
-import com.wise.baba.ui.fragment.FragmentHome;
 
 import android.app.Activity;
 import android.content.Context;
@@ -98,7 +97,7 @@ public class ShareCards {
 		/**检查是否初始化过，否则增加两个值*/
 		String strCardNames = sharedPreferences.getString("cardNames", "");
 		if(strCardNames.equals("")){
-			String initCardNames[] = {Const.TAG_ELECTIRC,Const.TAG_POI,Const.TAG_WEATHER};
+			String initCardNames[] = {Const.TAG_ELECTIRC_SECOND,Const.TAG_POI,Const.TAG_WEATHER};
 			put(initCardNames);
 		}
 		

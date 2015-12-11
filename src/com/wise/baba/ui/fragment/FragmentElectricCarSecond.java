@@ -3,6 +3,7 @@ package com.wise.baba.ui.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.baidu.location.BDLocation;
@@ -22,7 +23,6 @@ import com.wise.baba.R;
 import com.wise.baba.app.Const;
 import com.wise.baba.app.Msg;
 import com.wise.baba.biz.GetSystem;
-import com.wise.baba.biz.HttpAir;
 import com.wise.baba.biz.HttpCarInfo;
 import com.wise.baba.entity.CarData;
 import com.wise.baba.entity.ElectricCarData;
@@ -30,9 +30,11 @@ import com.wise.baba.entity.ElectricCarDetail;
 import com.wise.baba.entity.ElectricCarView;
 import com.wise.baba.net.NetThread;
 import com.wise.baba.ui.adapter.OnCardMenuListener;
+import com.wise.baba.ui.widget.DialView;
 import com.wise.baba.ui.widget.HScrollLayout;
 import com.wise.baba.ui.widget.OnViewChangeListener;
 import com.wise.car.CarLocationActivity;
+import com.wise.car.SearchMapActivity;
 import com.wise.setting.LoginActivity;
 
 import android.content.Intent;
@@ -49,14 +51,8 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-/**
- * @author Wu
- * 电动车
- */
-public class FragmentElectricCarInfo  extends Fragment {
-	
+public class FragmentElectricCarSecond extends Fragment{
 	static final String TAG = "FragmentElectricCarInfo";
 
 	private HScrollLayout hs_electric_car;//滑动车辆布局
@@ -64,8 +60,6 @@ public class FragmentElectricCarInfo  extends Fragment {
 	/** 当前车在列表中位置 **/
 	public int currentIndex = 0;
 	private OnCardMenuListener onCardMenuListener;
-	public HttpAir httpAir;
-	private Handler uiHander = null;//解锁开锁 指令发送 、反馈信息处理
 	private HttpCarInfo httpCarInfo;//刷新汽车的经纬度
 	CarData carData;
 	private String voltage     = "--";
@@ -91,10 +85,7 @@ public class FragmentElectricCarInfo  extends Fragment {
 		Log.d(TAG, "onActivityCreated();");
 		
 		super.onActivityCreated(savedInstanceState);
-		uiHander = new Handler(handleCallBack);
-		httpAir = new HttpAir(this.getActivity(),uiHander);
 		httpCarInfo = new HttpCarInfo(this.getActivity(), mHandler);
-		currentIndex = app.currentCarIndex;
 		app = (AppApplication) getActivity().getApplication();
 		carData = new CarData();
 		hs_electric_car = (HScrollLayout) getActivity().findViewById(R.id.hs_electric_car);
@@ -107,19 +98,13 @@ public class FragmentElectricCarInfo  extends Fragment {
 				}
 				currentIndex = changedIndex;
 				app.currentCarIndex = changedIndex;
-
-				carData = app.carDatas.get(currentIndex);
-				String device_id = carData.getDevice_id();	
-				
-				Log.d(TAG, "当前车辆:" + currentIndex + "--" + device_id);
-				httpCarInfo.requestGps(device_id);
 				mHandler.postDelayed(new Runnable() {
 					@Override
 					public void run() {
 						getElectricCarData();//获取数据
-						
+						httpCarInfo.requestAllData();
 					}
-				}, 200);
+				}, 300);
 				
 			}
 		});
@@ -139,6 +124,9 @@ public class FragmentElectricCarInfo  extends Fragment {
 	}
 	
 	
+	/**
+	 * 地理位置反解析
+	 */
 	OnGetGeoCoderResultListener listener = new OnGetGeoCoderResultListener() {
 		@Override
 		public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
@@ -148,28 +136,8 @@ public class FragmentElectricCarInfo  extends Fragment {
 					String adress = result.getAddress();
 					int startIndex = adress.indexOf("省") + 1;
 					adress = adress.substring(startIndex, adress.length());
-					
 					Log.d(TAG, "定位：：" + adress);
-					
 					app.carDatas.get(currentIndex).setAdress(adress);
-					String rcv_time = app.carDatas.get(currentIndex).getRcv_time();
-					
-					Log.d(TAG, "定位：：" + adress + GetSystem.GetNowDay());
-//					String gpsData = rcv_time.substring(0, 10);// 取出日期
-//					String nowData = GetSystem.GetNowDay();
-//					String showTime = "";
-//					if (gpsData.equals(nowData)) {
-//						showTime = rcv_time.substring(11, 16);
-//					} else if (gpsData.equals(GetSystem
-//							.GetNextData(nowData, -1))) {
-//						showTime = "昨天" + rcv_time.substring(11, 16);
-//					} else if (gpsData.equals(GetSystem
-//							.GetNextData(nowData, -2))) {
-//						showTime = "前天" + rcv_time.substring(11, 16);
-//					} else {
-//						showTime = rcv_time.substring(5, 16);
-//					}
-					
 					electric_carViews.get(currentIndex).getTv_location()
 							.setText(adress + "  " + GetSystem.GetNowDay() );
 					
@@ -199,64 +167,6 @@ public class FragmentElectricCarInfo  extends Fragment {
 		}
 	}
 	
-	/**
-	 * 处理锁定和解锁的返回信息处理
-	 */
-	public Handler.Callback handleCallBack = new Handler.Callback() {
-
-		@Override
-		public boolean handleMessage(Message msg) {
-			switch (msg.what) {
-			case Msg.Get_Electric_Car_Respon:
-				
-				Log.e(TAG, msg.obj.toString());
-				jsonLockAndUnlock(msg.obj.toString());
-				break;
-			}
-			return true;
-		}
-	};
-	
-	boolean isLock = false;
-	/**
-	 * @param str 判断是否操作成功
-	 */
-	private void jsonLockAndUnlock(String str) {
-		Log.i(TAG , "jsonLockAndUnlock " + str);
-		try {
-			JSONObject jsonObject = new JSONObject(str);
-			if (jsonObject.getInt("status_code") == 0) {
-				
-				if(isLock ){
-					isLock = true;
-					Toast.makeText(getActivity(), "锁定成功",
-							Toast.LENGTH_SHORT).show();
-				}else{
-					Toast.makeText(getActivity(), "解锁成功",
-							Toast.LENGTH_SHORT).show();
-				}
-			} else {
-				if(isLock ){
-					isLock = true;
-					Toast.makeText(getActivity(), "锁定失败",
-							Toast.LENGTH_SHORT).show();
-				}else{
-					Toast.makeText(getActivity(), "解锁失败",
-							Toast.LENGTH_SHORT).show();
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			if(isLock ){
-				isLock = true;
-				Toast.makeText(getActivity(), "锁定失败",
-						Toast.LENGTH_SHORT).show();
-			}else{
-				Toast.makeText(getActivity(), "解锁失败",
-						Toast.LENGTH_SHORT).show();
-			}
-		}
-	}
 	
 	
 	/**
@@ -276,7 +186,7 @@ public class FragmentElectricCarInfo  extends Fragment {
 		electric_carViews.clear();
 		for (int i = 0; i < app.carDatas.size(); i++) {
 			View v = LayoutInflater.from(getActivity()).inflate(
-					R.layout.item_electric_car_info, null);
+					R.layout.item_electric_car_second, null);
 
 			hs_electric_car.addView(v);
 			
@@ -295,12 +205,12 @@ public class FragmentElectricCarInfo  extends Fragment {
 			
 			TextView textLocation = (TextView) v
 					.findViewById(R.id.textLocation);
-			
-			ImageView iv_lock = (ImageView)v.findViewById(R.id.iv_electric_lock);
-			iv_lock.setOnClickListener(onClickListener);
-			ImageView iv_unlock = (ImageView)v.findViewById(R.id.iv_electric_unlock);
-			iv_unlock.setOnClickListener(onClickListener);
-			
+			DialView dianzhu_fenbu = (DialView) v.findViewById(R.id.dianzhu_fengbutu);
+			dianzhu_fenbu.setOnClickListener(onClickListener);
+			DialView xuhang_licheng = (DialView)v.findViewById(R.id.xuhang_licheng);
+			TextView tv_xuhang_l_c = (TextView)v.findViewById(R.id.tv_xuhang_l_c);
+			TextView tv_title_xhlc = (TextView)v.findViewById(R.id.tv_title_xhlc);
+
 			ElectricCarView electricCarView = new ElectricCarView();
 			electricCarView.setTv_charge_distance(tv_charge_distance);
 			electricCarView.setTv_remainingcapacity(tv_remainingcapacity);
@@ -308,9 +218,28 @@ public class FragmentElectricCarInfo  extends Fragment {
 			
 			electricCarView.setLl_adress(ll_adress);
 			electricCarView.setTv_location(textLocation);
+			electricCarView.setXuhang_licheng(xuhang_licheng);
+			electricCarView.setTv_xuhang_l_c(tv_xuhang_l_c);
+			electricCarView.setTv_title_xhlc(tv_title_xhlc);
+			
 			
 			electric_carViews.add(electricCarView);
 			tv_car_name.setText(app.carDatas.get(i).getNick_name());//显示昵称
+			
+			
+			String Device_id = app.carDatas.get(i).getDevice_id();
+			
+			if (Device_id == null || Device_id.equals("")) {
+
+				xuhang_licheng.initValue(0, mHandler);
+				tv_title_xhlc.setVisibility(View.VISIBLE);
+				tv_title_xhlc.setText("未绑定终端");
+				tv_xuhang_l_c.setText("0");
+			}else{
+				tv_title_xhlc.setVisibility(View.GONE);
+			}
+			
+			
 		}
 
 		hs_electric_car.snapToScreen(currentIndex);
@@ -328,30 +257,28 @@ public class FragmentElectricCarInfo  extends Fragment {
 			switch (v.getId()) {
 			case R.id.iv_menu_ctrl:
 				if (onCardMenuListener != null) {
-					onCardMenuListener.showCarMenu(Const.TAG_ELECTIRC);
+					onCardMenuListener.showCarMenu(Const.TAG_ELECTIRC_SECOND);
 				}
 				break;
 				
 			case R.id.ll_adress://跳转到地图
-				Intent intent = new Intent(getActivity(),
+				Intent intent_map = new Intent(getActivity(),
 						CarLocationActivity.class);
-				intent.putExtra("index", currentIndex);
-				intent.putExtra("isHotLocation", true);
-				startActivity(intent);
+				intent_map.putExtra("index", currentIndex);
+				intent_map.putExtra("isHotLocation", true);
+				startActivity(intent_map);
 				break;
 				
-			case R.id.iv_electric_lock:
-				Log.e(TAG, "----" + currentIndex);
-				httpAir.setPower(app.carDatas.get(currentIndex).getDevice_id(),
-						false);
-				isLock = true;
-				break;
-				
-			case R.id.iv_electric_unlock:
-				Log.e(TAG, "----" + currentIndex);
-				httpAir.setPower(app.carDatas.get(currentIndex).getDevice_id(),
-						true);
-				isLock = false;
+			case R.id.dianzhu_fengbutu://跳转到电柱分布
+				if (app.carDatas == null || app.carDatas.size() == 0) {
+					return;
+				}
+				// 地图搜寻
+				Intent intent_charge = new Intent(FragmentElectricCarSecond.this.getActivity(),
+						SearchMapActivity.class);
+				intent_charge.putExtra("keyWord", "充电柱");
+				intent_charge.putExtra("key", "");
+				startActivity(intent_charge);
 				break;
 			}
 		}
@@ -374,9 +301,8 @@ public class FragmentElectricCarInfo  extends Fragment {
 				setGps(bundle);
 				Log.d(TAG, "--->setGps");
 				break;
-			
+				
 			case Msg.Get_Electric_Car_Data:
-//				Log.d(TAG, "----" + msg.obj.toString() );
 				jsonElectricCarData(msg.obj.toString());
 				break;
 				
@@ -406,10 +332,53 @@ public class FragmentElectricCarInfo  extends Fragment {
 	 * @param jsonData 
 	 */
 	private void jsonElectricCarData(String jsonData){
-		carData = app.carDatas.get(currentIndex);
-		String device_id = carData.getDevice_id();
 		
-		Log.d(TAG, "--->");
+		
+		try {
+			JSONObject obj = new JSONObject(jsonData);
+			
+			if(obj.has("active_obd_data")){
+				if(obj.getJSONObject("active_obd_data").has("xhlc")){
+					xhlicheng = obj.getJSONObject("active_obd_data").getString("xhlc");
+					Log.d(TAG, "===========" + xhlicheng);
+				}else {
+					xhlicheng   = "--";
+					Log.d(TAG, "===========" + "没有 xhlc");
+				}if(obj.getJSONObject("active_obd_data").has("sydl")){
+					sydianliang = obj.getJSONObject("active_obd_data").getString("sydl");
+					Log.d(TAG, "===========" + sydianliang);
+				}else {
+					sydianliang = "--";
+					Log.d(TAG, "===========" + "没有 sydl");
+				}if(obj.getJSONObject("active_obd_data").has("dpdy")){
+					voltage = obj.getJSONObject("active_obd_data").getString("dpdy");
+					
+					if(Float.valueOf(voltage) < 25.00){
+						voltage     = "--";
+						Log.d(TAG, "===========" + "没有 dpdy");
+					}else{
+						Log.d(TAG, "===========" + voltage);
+					}
+				}else {
+					voltage     = "--";
+					Log.d(TAG, "===========" + "没有 dpdy");
+				}
+				
+			}else{
+				Log.d(TAG, "===========" + "wuwuwuwuwu");
+				
+				voltage     = "--";
+				xhlicheng   = "--";
+				sydianliang = "--";
+			}
+			
+			
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*不用GSON解析*/
+		/*Log.d(TAG, "--->");
 		if(device_id.equals("1592")){
 			Gson gson = new Gson();
 			ElectricCarData electricCarData = gson.fromJson(jsonData, ElectricCarData.class);
@@ -422,8 +391,7 @@ public class FragmentElectricCarInfo  extends Fragment {
 			voltage     = "--";
 			xhlicheng   = "--";
 			sydianliang = "--";
-		}
-		
+		}*/
 		
 		mHandler.sendEmptyMessage(Msg.Get_Electric_Car_TenSecond);
 	}
@@ -433,10 +401,21 @@ public class FragmentElectricCarInfo  extends Fragment {
 	 * @param index 更新Ui
 	 */
 	private void updaUI(int index){
+		
 		ElectricCarView electricCarView = electric_carViews.get(index);
 		electricCarView.getTv_charge_distance().setText(xhlicheng);
 		electricCarView.getTv_remainingcapacity().setText(sydianliang);
 		electricCarView.getTv_working_voltage().setText(voltage);
+		if(xhlicheng.equals("--")){
+			electricCarView.getXuhang_licheng().initValue(0, mHandler);
+			electricCarView.getTv_xuhang_l_c().setText("0");
+		}else{
+			
+			electricCarView.getXuhang_licheng().initValue(Integer.valueOf(xhlicheng)/2, mHandler);
+			electricCarView.getTv_xuhang_l_c().setText(xhlicheng);
+		}
+		
+		
 	}
 	
 	
@@ -447,7 +426,6 @@ public class FragmentElectricCarInfo  extends Fragment {
 		
 		carData = app.carDatas.get(currentIndex);
 		String device_id = carData.getDevice_id();
-		
 		String electricUrl = "http://api.bibibaba.cn/device/" +
 				device_id +
 				"?auth_code=" + app.auth_code;
@@ -463,7 +441,7 @@ public class FragmentElectricCarInfo  extends Fragment {
 		
 		hs_electric_car.removeAllViews();
 		View v = LayoutInflater.from(getActivity()).inflate(
-				R.layout.item_electric_car_info, null);
+				R.layout.item_electric_car_second, null);
 		hs_electric_car.addView(v);
 		
 		LinearLayout ll_electric_car = (LinearLayout)v.findViewById(R.id.ll_electric_car);	
@@ -471,12 +449,14 @@ public class FragmentElectricCarInfo  extends Fragment {
 		TextView tv_remainingcapacity = (TextView)v.findViewById(R.id.tv_remainingcapacity);//剩余电量
 		TextView tv_charge_distance   = (TextView)v.findViewById(R.id.tv_charge_distance);//续航里程
 		TextView tv_car_name = (TextView)v.findViewById(R.id.tv_car_name);//汽车名字
+		TextView tv_xuhang_l_c = (TextView)v.findViewById(R.id.tv_xuhang_l_c);
 		
 		TextView textLocation = (TextView) v.findViewById(R.id.textLocation);
 		textLocation.setText("");
 		tv_working_voltage.setText("--");
 		tv_remainingcapacity.setText("--");
 		tv_charge_distance.setText("--");
+		tv_xuhang_l_c.setText("0");
 		tv_car_name.setText("绑定叭叭车载智能配件");
 		
 		ll_electric_car.setOnClickListener(new OnClickListener() {
@@ -601,4 +581,7 @@ public class FragmentElectricCarInfo  extends Fragment {
 			initView();
 		} 
 	}
+
+	
+	
 }
