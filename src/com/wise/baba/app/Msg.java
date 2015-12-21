@@ -33,6 +33,7 @@ public class Msg {
 	public static final int Get_Electric_Car_Respon = 37;// 锁定和解锁返回
 	
 	public static final int Get_Electric_Car_TenSecond = 38;//十秒刷新
+	public static final int Get_Electric_Car_Xhlc = 39;//更新续航里程百分比图
 	
 	/**
 	 * FragmentHomeSpeed

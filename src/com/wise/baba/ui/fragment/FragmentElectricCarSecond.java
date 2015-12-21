@@ -343,6 +343,16 @@ public class FragmentElectricCarSecond extends Fragment{
 				Log.d(TAG, "----case Msg.Get_Electric_Car_TenSecond:" );
 				updaUI(currentIndex);//更新UI
 				break;
+				
+			case Msg.Get_Electric_Car_Xhlc:
+				Log.d(TAG, "----case Msg.Get_Electric_Car_Xhlc-----:" );
+				ElectricCarView electricCarView = electric_carViews.get(currentIndex);
+				if(xhlicheng.equals("--")){
+					electricCarView.getXuhang_licheng().initValue(0, mHandler);
+				}else{
+					electricCarView.getXuhang_licheng().initValue(Integer.valueOf(xhlicheng)/2, mHandler);
+				}
+				break;
 			}
 		}
 	};
@@ -366,8 +376,7 @@ public class FragmentElectricCarSecond extends Fragment{
 	 * @param jsonData 
 	 */
 	private void jsonElectricCarData(String jsonData){
-		
-		
+			
 		try {
 			JSONObject obj = new JSONObject(jsonData);
 			
@@ -400,12 +409,19 @@ public class FragmentElectricCarSecond extends Fragment{
 				
 			}else{
 				Log.d(TAG, "===========" + "wuwuwuwuwu");
-				
 				voltage     = "--";
 				xhlicheng   = "--";
 				sydianliang = "--";
 			}
-			
+			if(voltage == "null"){
+				voltage     = "--";
+			}
+			if(xhlicheng == "null"){
+				xhlicheng = "--";
+			}
+			if(sydianliang == "null"){
+				sydianliang = "--";
+			}
 			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -440,12 +456,16 @@ public class FragmentElectricCarSecond extends Fragment{
 		electricCarView.getTv_charge_distance().setText(xhlicheng);
 		electricCarView.getTv_remainingcapacity().setText(sydianliang);
 		electricCarView.getTv_working_voltage().setText(voltage);
+		
+		
 		if(xhlicheng.equals("--")){
-			electricCarView.getXuhang_licheng().initValue(0, mHandler);
+			mHandler.sendEmptyMessage(Msg.Get_Electric_Car_Xhlc);
+//			electricCarView.getXuhang_licheng().initValue(0, mHandler);
 			electricCarView.getTv_xuhang_l_c().setText("0");
 		}else{
-			
-			electricCarView.getXuhang_licheng().initValue(Integer.valueOf(xhlicheng)/2, mHandler);
+			mHandler.sendEmptyMessage(Msg.Get_Electric_Car_Xhlc);
+			Log.d(TAG, "===========" + xhlicheng);
+//			electricCarView.getXuhang_licheng().initValue(Integer.valueOf(xhlicheng)/2, mHandler);
 			electricCarView.getTv_xuhang_l_c().setText(xhlicheng);
 		}
 		

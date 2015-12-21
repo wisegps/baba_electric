@@ -27,7 +27,7 @@ public class Const {
 	
 	public static final String TAG_AIR = "fragmentHomeAir";//空气质量
 	
-	public static final String TAG_ELECTIRC = "fragmentElectricCar";//电动车
+//	public static final String TAG_ELECTIRC = "fragmentElectricCar";//电动车
 	
 	public static final String TAG_ELECTIRC_SECOND = "fragmentElectricCarSecond";//电动车卡片二
 	

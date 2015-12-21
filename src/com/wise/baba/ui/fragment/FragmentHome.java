@@ -210,7 +210,7 @@ public class FragmentHome extends Fragment {
 						.add(R.id.ll_cards, fragmentHomeAir, Const.TAG_AIR);
 				transaction.commit();
 				cards.put(Const.TAG_AIR, fragmentHomeAir);
-			} else if (cardName.equals(Const.TAG_ELECTIRC)) {
+			} /*else if (cardName.equals(Const.TAG_ELECTIRC)) {
 					Log.i("fragment", "设置净化器卡片布局");
 					removeFragment(Const.TAG_ELECTIRC);
 					
@@ -224,7 +224,7 @@ public class FragmentHome extends Fragment {
 							.add(R.id.ll_cards, fragmentElectricCarInfo, Const.TAG_ELECTIRC);
 					transaction.commit();
 					cards.put(Const.TAG_ELECTIRC, fragmentElectricCarInfo);
-				} else if (cardName.equals(Const.TAG_ELECTIRC_SECOND)) {
+				}*/ else if (cardName.equals(Const.TAG_ELECTIRC_SECOND)) {
 					Log.i("fragment", "设置净化器卡片布局");
 					removeFragment(Const.TAG_ELECTIRC_SECOND);
 					
@@ -335,11 +335,11 @@ public class FragmentHome extends Fragment {
 			fragmentCarInfo.setLoginView();
 		}
 		
-		FragmentElectricCarInfo fragmentElectricCarInfo = (FragmentElectricCarInfo) cards
+/*		FragmentElectricCarInfo fragmentElectricCarInfo = (FragmentElectricCarInfo) cards
 				.get(Const.TAG_ELECTIRC);
 		if (fragmentElectricCarInfo != null) {
 			fragmentElectricCarInfo.setLoginView();
-		}
+		}*/
 		
 		FragmentElectricCarSecond fragmentElectricCarSecond = (FragmentElectricCarSecond) cards
 				.get(Const.TAG_ELECTIRC_SECOND);
